@@ -8,7 +8,6 @@ import css from 'App.module.css';
 
 export default class App extends Component {
   state = {
-    // contacts: [],
     contacts: [
       { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
       { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
@@ -17,15 +16,18 @@ export default class App extends Component {
     ],
     filter: '',
   };
+
   formSubmitHandler = data => {
     const { name, number } = data;
+    const { contacts } = this.state;
 
-    for (const contact of this.state.contacts) {
-      if (name.toLowerCase() === contact.name.toLowerCase()) {
-        alert(name + ' is already in contacts');
-      }
+    if (
+      contacts.some(
+        contact => name.toLowerCase() === contact.name.toLowerCase()
+      )
+    ) {
+      return alert(name + ' is already in contacts');
     }
-
     this.setState(prevState => ({
       contacts: [
         ...prevState.contacts,
@@ -43,11 +45,15 @@ export default class App extends Component {
     }));
   };
 
-  render() {
-    const normalizedFilter = this.state.filter.toLowerCase();
-    const filteredContacts = this.state.contacts.filter(contact =>
+  filterContacts = () => {
+    const { filter, contacts } = this.state;
+    const normalizedFilter = filter.toLowerCase();
+    return contacts.filter(contact =>
       contact.name.toLowerCase().includes(normalizedFilter)
     );
+  };
+
+  render() {
     return (
       <div className={css.container}>
         <h1>Phonebook</h1>
@@ -55,7 +61,7 @@ export default class App extends Component {
         <h2>Contacts</h2>
         <Filter value={this.state.filter} onChange={this.changeFilter} />
         <ContactList
-          contacts={filteredContacts}
+          contacts={this.filterContacts()}
           onDeleteContact={this.deleteContact}
         />
       </div>
